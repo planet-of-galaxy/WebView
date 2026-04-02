@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>视频播放</title>
+    <title>页面转发</title>
     <style>
         body {
             margin: 0;
@@ -11,25 +11,178 @@
             height: 100vh;
             background-color: #f0f0f0;
             font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .video-container {
-            width: 100%;
-            height: 100%;
-            background: white;
+        .loading-container {
+            text-align: center;
+        }
+        .loading-text {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .spinner {
+            border: 8px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 8px solid #3498db;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error {
+            color: #e74c3c;
+            font-size: 18px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="video-container">
-        <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/pH1P9gpnoT4?si=yeKYWwptT_C7k4A8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-          -->
-        <iframe
-            src="https://www.youtube.com/embed/pH1P9gpnoT4?playsinline=1&enablejsapi=1"
-            width="100%"
-            height="100%"
-            allow="autoplay; encrypted-media"
-            allowfullscreen>
-        </iframe>
+    <div class="loading-container">
+        <div class="loading-text" id="loadingText">Loading...</div>
+        <div class="spinner"></div>
+        <div class="error" id="errorMessage" style="display: none;"></div>
     </div>
+
+    <script>
+        // 解析URL参数
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                target: params.get('target'),
+                language: params.get('language')
+            };
+        }
+
+        // 语言映射（支持完整地域代码，键名使用小写）
+        const languageMap = {
+            'en-us': 'Loading...',
+            'zh-cn': '加载中...',
+            'zh-tw': '載入中...',
+            'ja-jp': '読み込み中...',
+            'ko-kr': '로딩 중...',
+            'de-de': 'Wird geladen...',
+            'fr-fr': 'Chargement...',
+            'es-es': 'Cargando...',
+            'it-it': 'Caricamento...',
+            'ru-ru': 'Загрузка...',
+            'pt-br': 'Carregando...',
+            'pl-pl': 'Ładowanie...',
+            // 简写别名（向后兼容）
+            'en': 'Loading...',
+            'zh': '加载中...',
+            'ja': '読み込み中...',
+            'ko': '로딩 중...',
+            'de': 'Wird geladen...',
+            'fr': 'Chargement...',
+            'es': 'Cargando...',
+            'it': 'Caricamento...',
+            'ru': 'Загрузка...',
+            'pt': 'Carregando...',
+            'pl': 'Ładowanie...',
+        };
+
+        // 设置加载文本
+        function setLoadingText(language) {
+            const loadingTextEl = document.getElementById('loadingText');
+            const defaultText = 'Loading...';
+            if (language) {
+                // 转换为小写进行匹配
+                const langKey = language.toLowerCase();
+                if (languageMap[langKey]) {
+                    loadingTextEl.textContent = languageMap[langKey];
+                    return;
+                }
+            }
+            // 如果缺少language参数或参数不正确，默认使用英语
+            loadingTextEl.textContent = defaultText;
+        }
+
+        // 验证target路径，防止目录遍历攻击
+        function validateTargetPath(target) {
+            if (!target) {
+                return { valid: false, error: 'target参数不能为空' };
+            }
+            // 移除开头的斜杠和点
+            let cleanPath = target.replace(/^\/+|^\.+/g, '');
+            // 禁止包含../
+            if (cleanPath.includes('..')) {
+                return { valid: false, error: '非法路径' };
+            }
+            // 确保路径在Bilibili或YouTube目录下
+            if (!cleanPath.startsWith('Bilibili/') && !cleanPath.startsWith('YouTube/')) {
+                return { valid: false, error: 'target必须位于Bilibili或YouTube目录下' };
+            }
+            // 确保以.html结尾
+            if (!cleanPath.endsWith('.html')) {
+                cleanPath += '.html';
+            }
+            return { valid: true, path: cleanPath };
+        }
+
+        // 跳转到目标页面
+        function redirectToTarget(targetPath) {
+            // 检查文件是否存在（通过尝试加载）
+            const xhr = new XMLHttpRequest();
+            xhr.open('HEAD', targetPath, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        // 文件存在，进行跳转
+                        window.location.href = targetPath;
+                    } else {
+                        // 文件不存在，显示错误
+                        showError(`目标页面不存在: ${targetPath}`);
+                    }
+                }
+            };
+            xhr.onerror = function() {
+                showError(`无法访问目标页面: ${targetPath}`);
+            };
+            xhr.send();
+        }
+
+        // 显示错误信息
+        function showError(message) {
+            const errorEl = document.getElementById('errorMessage');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            const loadingTextEl = document.getElementById('loadingText');
+            loadingTextEl.style.display = 'none';
+            document.querySelector('.spinner').style.display = 'none';
+        }
+
+        // 主函数
+        function main() {
+            const { target, language } = getQueryParams();
+
+            // 设置加载文本
+            setLoadingText(language);
+
+            // 验证并处理target
+            if (!target) {
+                showError('缺少target参数');
+                return;
+            }
+
+            const validation = validateTargetPath(target);
+            if (!validation.valid) {
+                showError(validation.error);
+                return;
+            }
+
+            // 跳转到目标页面
+            redirectToTarget(validation.path);
+        }
+
+        // 页面加载完成后执行
+        window.addEventListener('DOMContentLoaded', main);
+    </script>
 </body>
 </html>
