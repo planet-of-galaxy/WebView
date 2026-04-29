@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频播放</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        .video-container {
+            width: 99.5%;
+            height: 99%;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/pH1P9gpnoT4?si=yeKYWwptT_C7k4A8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+          -->
+        <iframe
+            src="https://www.youtube.com/embed/pH1P9gpnoT4?playsinline=1&enablejsapi=1"
+            width="100%"
+            height="100%"
+            allow="autoplay; encrypted-media"
+            allowfullscreen>
+        </iframe>
+    </div>
+</body>
+</html>
