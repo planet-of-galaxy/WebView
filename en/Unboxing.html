@@ -374,10 +374,13 @@
 
         document.addEventListener('click', resetHideTimer);
 
-        video.addEventListener('click', function() {
-            if (controls.style.display === 'none') {
+        video.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (controls.style.display === 'none' || controls.style.display === '') {
                 showControls();
                 resetHideTimer();
+            } else {
+                hideControls();
             }
         });
     </script>
