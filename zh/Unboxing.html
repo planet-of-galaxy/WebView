@@ -6,6 +6,9 @@
     <title>视频播放</title>
     <link rel="preload" href="../Image/mute.png" as="image">
     <link rel="preload" href="../Image/minimise.png" as="image">
+    <link rel="preload" href="../Image/maximize.png" as="image">
+    <link rel="preload" href="../Image/volume.png" as="image">
+    <link rel="preload" href="../Image/pause.png" as="image">
     <style>
         body {
             margin: 0;
@@ -102,7 +105,7 @@
             right: 0;
             height: 65px;
             background: rgba(0, 0, 0, 0.7);
-            display: flex;
+            display: none;
             align-items: center;
             padding: 0 10px;
             gap: 10px;
@@ -358,8 +361,6 @@
                 resetHideTimer();
             }
         });
-
-        resetHideTimer();
     </script>
 </body>
 </html>
