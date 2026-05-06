@@ -142,7 +142,9 @@
             <svg viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="40" fill="rgba(0,0,0,0.5)"/><polygon points="29,20 29,60 59,40" fill="white"/></svg>
         </div>
         <div class="controls" id="controls">
-            <button class="play-btn" id="playBtn">⏸</button>
+            <button class="play-btn" id="playBtn">
+                <img id="playIcon" src="../Image/pause.png" alt="Pause" style="width: 20px; height: 20px;">
+            </button>
             <div class="progress-bar" id="progressBar">
                 <div class="progress-filled" id="progressFilled"></div>
             </div>
@@ -194,21 +196,24 @@
 
         // 播放/暂停
         playBtn.addEventListener('click', function() {
+            const playIcon = document.getElementById('playIcon');
             if (video.paused) {
                 video.play();
-                playBtn.textContent = '⏸';
+                playIcon.src = '../Image/pause.png';
             } else {
                 video.pause();
-                playBtn.textContent = '▶';
+                playIcon.src = '../Image/play.png';
             }
         });
 
         video.addEventListener('play', function() {
-            playBtn.textContent = '⏸';
+            const playIcon = document.getElementById('playIcon');
+            playIcon.src = '../Image/pause.png';
         });
 
         video.addEventListener('pause', function() {
-            playBtn.textContent = '▶';
+            const playIcon = document.getElementById('playIcon');
+            playIcon.src = '../Image/play.png';
         });
 
         // 时间格式化
