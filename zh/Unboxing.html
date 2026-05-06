@@ -20,10 +20,10 @@
         }
         .exit-fullscreen-btn {
             display: none;
-            position: fixed;
+            position: absolute;
             top: 20px;
             left: 20px;
-            z-index: 2147483647;
+            z-index: 100;
             width: 40px;
             height: 40px;
             border-radius: 50%;
@@ -125,8 +125,8 @@
     </style>
 </head>
 <body>
-    <button class="exit-fullscreen-btn" id="exitFullscreenBtn">&lt;</button>
     <div class="video-container">
+        <button class="exit-fullscreen-btn" id="exitFullscreenBtn">&lt;</button>
         <video
             id="videoPlayer"
             src="../Video/Unboxing_zh.mp4"
@@ -280,6 +280,38 @@
             volSlider.value = video.muted ? 0 : video.volume;
             updateIcon();
         });
+
+        let hideTimer;
+        const controls = document.getElementById('controls');
+
+        function hideControls() {
+            controls.style.display = 'none';
+            btn.style.display = 'none';
+        }
+
+        function showControls() {
+            controls.style.display = 'flex';
+            if (document.fullscreenElement || document.webkitFullscreenElement) {
+                btn.style.display = 'flex';
+            }
+        }
+
+        function resetHideTimer() {
+            clearTimeout(hideTimer);
+            showControls();
+            hideTimer = setTimeout(hideControls, 5000);
+        }
+
+        document.addEventListener('click', resetHideTimer);
+
+        video.addEventListener('click', function() {
+            if (controls.style.display === 'none') {
+                showControls();
+                resetHideTimer();
+            }
+        });
+
+        resetHideTimer();
     </script>
 </body>
 </html>
