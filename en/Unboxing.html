@@ -126,7 +126,9 @@
 </head>
 <body>
     <div class="video-container">
-        <button class="exit-fullscreen-btn" id="exitFullscreenBtn">&lt;</button>
+        <button class="exit-fullscreen-btn" id="exitFullscreenBtn">
+            <img src="../Image/minimise.png" alt="Exit Fullscreen" style="width: 24px; height: 24px;">
+        </button>
         <video
             id="videoPlayer"
             src="../Video/Unboxing_en.mp4"
@@ -145,11 +147,15 @@
                 <div class="progress-filled" id="progressFilled"></div>
             </div>
             <span class="time" id="timeDisplay">0:00 / 0:00</span>
-            <button class="volume-btn" id="volumeBtn">🔊</button>
+            <button class="volume-btn" id="volumeBtn">
+                <img id="volumeIcon" src="../Image/volume.png" alt="Volume" style="width: 20px; height: 20px;">
+            </button>
             <div class="volume-slider-wrap" id="volumeSlider">
                 <input type="range" min="0" max="1" step="0.05" value="1">
             </div>
-            <button class="fullscreen-btn" id="fullscreenBtn">⛶</button>
+            <button class="fullscreen-btn" id="fullscreenBtn">
+                <img id="fullscreenIcon" src="../Image/maximize.png" alt="Fullscreen" style="width: 20px; height: 20px;">
+            </button>
         </div>
     </div>
     <script>
@@ -246,11 +252,12 @@
 
         // 更新全屏按钮图标
         function updateFullscreenBtn() {
+            const fullscreenIcon = document.getElementById('fullscreenIcon');
             if (document.fullscreenElement || document.webkitFullscreenElement) {
-                fullscreenBtn.textContent = '⊡';
+                fullscreenIcon.src = '../Image/minimise.png';
                 btn.style.display = 'flex';
             } else {
-                fullscreenBtn.textContent = '⛶';
+                fullscreenIcon.src = '../Image/maximize.png';
                 btn.style.display = 'none';
             }
         }
@@ -263,7 +270,8 @@
         const volSlider = volWrap.querySelector('input');
 
         function updateIcon() {
-            volBtn.textContent = video.volume === 0 || video.muted ? '🔇' : '🔊';
+            const volumeIcon = document.getElementById('volumeIcon');
+            volumeIcon.src = video.volume === 0 || video.muted ? '../Image/mute.png' : '../Image/volume.png';
         }
 
         volBtn.addEventListener('click', function() {
