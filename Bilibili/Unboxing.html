@@ -38,6 +38,46 @@
         .exit-fullscreen-btn:hover {
             background: rgba(0, 0, 0, 0.7);
         }
+        .volume-btn {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            z-index: 2147483646;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 22px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .volume-slider-wrap {
+            display: none;
+            position: absolute;
+            top: 50%;
+            right: 62px;
+            transform: translateY(-50%);
+            z-index: 2147483646;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            padding: 12px 6px;
+            align-items: center;
+            justify-content: center;
+        }
+        .volume-slider-wrap.show { display: flex; }
+        .volume-slider-wrap input[type="range"] {
+            writing-mode: vertical-lr;
+            direction: rtl;
+            width: 36px;
+            height: 120px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -51,6 +91,10 @@
             controls
             autoplay>
         </video>
+        <div class="volume-slider-wrap" id="volumeSlider">
+            <input type="range" min="0" max="1" step="0.05" value="1">
+        </div>
+        <button class="volume-btn" id="volumeBtn">🔊</button>
     </div>
     <script>
         const btn = document.getElementById('exitFullscreenBtn');
@@ -64,6 +108,36 @@
         btn.addEventListener('click', function() {
             if (document.exitFullscreen) document.exitFullscreen();
             else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        });
+
+        const volBtn = document.getElementById('volumeBtn');
+        const volWrap = document.getElementById('volumeSlider');
+        const volSlider = volWrap.querySelector('input');
+
+        function updateIcon() {
+            volBtn.textContent = video.volume === 0 || video.muted ? '🔇' : '🔊';
+        }
+
+        volBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            volWrap.classList.toggle('show');
+        });
+
+        volSlider.addEventListener('input', function() {
+            video.volume = parseFloat(this.value);
+            video.muted = false;
+            updateIcon();
+        });
+
+        video.addEventListener('volumechange', function() {
+            volSlider.value = video.muted ? 0 : video.volume;
+            updateIcon();
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!volWrap.contains(e.target) && e.target !== volBtn) {
+                volWrap.classList.remove('show');
+            }
         });
     </script>
 </body>
