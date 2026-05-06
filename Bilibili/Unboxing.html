@@ -17,63 +17,19 @@
             height: 99%;
             background: white;
         }
-        video.fullscreen-mode {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            z-index: 9999;
-            background: #000;
-        }
-        #exitBtn {
-            display: none;
-            position: fixed;
-            top: 12px; right: 12px;
-            z-index: 10000;
-            padding: 8px 14px;
-            background: rgba(0,0,0,0.6);
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        #fsBtn {
-            display: block;
-            margin: 4px;
-            padding: 8px 14px;
-            background: rgba(0,0,0,0.6);
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-        }
     </style>
 </head>
 <body>
     <div class="video-container">
+        <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/pH1P9gpnoT4?si=yeKYWwptT_C7k4A8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+          -->
         <video
-            src="../Video/Unboxing/Unboxing_zh.mp4"
+            src="../Video/Unboxing_zh-cn.mp4"
             width="100%"
             height="100%"
             controls
-            autoplay
-            playsinline
-            controlsList="nofullscreen nodownload">
+            autoplay>
         </video>
     </div>
-    <button id="fsBtn" onclick="enterFS()">⛶ 全屏</button>
-    <button id="exitBtn" onclick="exitFS()">✕ 退出全屏</button>
-    <script>
-        const video = document.querySelector('video');
-        function enterFS() {
-            video.classList.add('fullscreen-mode');
-            document.getElementById('exitBtn').style.display = 'block';
-            document.getElementById('fsBtn').style.display = 'none';
-        }
-        function exitFS() {
-            video.classList.remove('fullscreen-mode');
-            document.getElementById('exitBtn').style.display = 'none';
-            document.getElementById('fsBtn').style.display = 'block';
-        }
-    </script>
 </body>
 </html>
