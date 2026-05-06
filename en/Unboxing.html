@@ -39,46 +39,71 @@
             background: rgba(0, 0, 0, 0.7);
         }
         .volume-btn {
-            position: absolute;
-            top: 50%;
-            right: 12px;
-            transform: translateY(-50%);
-            z-index: 2147483646;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            font-size: 22px;
+            width: 36px;
+            height: 36px;
+            background: transparent;
             border: none;
+            color: white;
+            font-size: 20px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            -webkit-tap-highlight-color: transparent;
         }
         .volume-slider-wrap {
             display: none;
-            position: absolute;
-            top: 50%;
-            right: 62px;
-            transform: translateY(-50%);
-            z-index: 2147483646;
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: 20px;
-            padding: 12px 6px;
             align-items: center;
-            justify-content: center;
-            width: 52px;
-            height: 144px;
+            width: 80px;
         }
         .volume-slider-wrap.show { display: flex; }
         .volume-slider-wrap input[type="range"] {
-            width: 120px;
-            height: 36px;
+            width: 100%;
+            height: 6px;
             cursor: pointer;
-            transform: rotate(-90deg);
-            transform-origin: center;
+        }
+        .controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 10px;
+            z-index: 10;
+        }
+        .play-btn, .fullscreen-btn {
+            width: 36px;
+            height: 36px;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+        .progress-filled {
+            height: 100%;
+            background: #fff;
+            border-radius: 3px;
+            width: 0%;
+        }
+        .time {
+            color: white;
+            font-size: 13px;
+            white-space: nowrap;
         }
     </style>
 </head>
@@ -90,20 +115,32 @@
             src="../Video/Unboxing_en.mp4"
             width="100%"
             height="100%"
-            controls
-            controlsList="nodownload"
             disablePictureInPicture
             oncontextmenu="return false;"
             autoplay>
         </video>
-        <div class="volume-slider-wrap" id="volumeSlider">
-            <input type="range" min="0" max="1" step="0.05" value="1">
+        <div class="controls" id="controls">
+            <button class="play-btn" id="playBtn">⏸</button>
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-filled" id="progressFilled"></div>
+            </div>
+            <span class="time" id="timeDisplay">0:00 / 0:00</span>
+            <button class="volume-btn" id="volumeBtn">🔊</button>
+            <div class="volume-slider-wrap" id="volumeSlider">
+                <input type="range" min="0" max="1" step="0.05" value="1">
+            </div>
+            <button class="fullscreen-btn" id="fullscreenBtn">⛶</button>
         </div>
-        <button class="volume-btn" id="volumeBtn">🔊</button>
     </div>
     <script>
         const btn = document.getElementById('exitFullscreenBtn');
         const video = document.getElementById('videoPlayer');
+        const playBtn = document.getElementById('playBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressFilled = document.getElementById('progressFilled');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+
         document.addEventListener('fullscreenchange', function() {
             btn.style.display = document.fullscreenElement ? 'flex' : 'none';
         });
@@ -114,6 +151,78 @@
             if (document.exitFullscreen) document.exitFullscreen();
             else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
         });
+
+        // 播放/暂停
+        playBtn.addEventListener('click', function() {
+            if (video.paused) {
+                video.play();
+                playBtn.textContent = '⏸';
+            } else {
+                video.pause();
+                playBtn.textContent = '▶';
+            }
+        });
+
+        video.addEventListener('play', function() {
+            playBtn.textContent = '⏸';
+        });
+
+        video.addEventListener('pause', function() {
+            playBtn.textContent = '▶';
+        });
+
+        // 时间格式化
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return mins + ':' + (secs < 10 ? '0' : '') + secs;
+        }
+
+        // 更新进度和时间
+        video.addEventListener('timeupdate', function() {
+            const percent = (video.currentTime / video.duration) * 100;
+            progressFilled.style.width = percent + '%';
+            timeDisplay.textContent = formatTime(video.currentTime) + ' / ' + formatTime(video.duration);
+        });
+
+        // 进度条点击跳转
+        progressBar.addEventListener('click', function(e) {
+            const rect = progressBar.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            video.currentTime = percent * video.duration;
+        });
+
+        // 全屏功能
+        fullscreenBtn.addEventListener('click', function() {
+            const container = document.querySelector('.video-container');
+            if (document.fullscreenElement || document.webkitFullscreenElement) {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
+            } else {
+                if (container.requestFullscreen) {
+                    container.requestFullscreen();
+                } else if (container.webkitRequestFullscreen) {
+                    container.webkitRequestFullscreen();
+                }
+            }
+        });
+
+        // 更新全屏按钮图标
+        function updateFullscreenBtn() {
+            if (document.fullscreenElement || document.webkitFullscreenElement) {
+                fullscreenBtn.textContent = '⊡';
+                btn.style.display = 'flex';
+            } else {
+                fullscreenBtn.textContent = '⛶';
+                btn.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('fullscreenchange', updateFullscreenBtn);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenBtn);
 
         const volBtn = document.getElementById('volumeBtn');
         const volWrap = document.getElementById('volumeSlider');
