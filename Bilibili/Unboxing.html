@@ -36,6 +36,16 @@
             border-radius: 4px;
             font-size: 16px;
         }
+        #fsBtn {
+            display: block;
+            margin: 4px;
+            padding: 8px 14px;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -50,16 +60,19 @@
             controlsList="nofullscreen nodownload">
         </video>
     </div>
+    <button id="fsBtn" onclick="enterFS()">⛶ 全屏</button>
     <button id="exitBtn" onclick="exitFS()">✕ 退出全屏</button>
     <script>
         const video = document.querySelector('video');
         function enterFS() {
             video.classList.add('fullscreen-mode');
             document.getElementById('exitBtn').style.display = 'block';
+            document.getElementById('fsBtn').style.display = 'none';
         }
         function exitFS() {
             video.classList.remove('fullscreen-mode');
             document.getElementById('exitBtn').style.display = 'none';
+            document.getElementById('fsBtn').style.display = 'block';
         }
     </script>
 </body>
