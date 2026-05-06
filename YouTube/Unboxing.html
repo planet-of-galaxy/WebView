@@ -69,14 +69,16 @@
             padding: 12px 6px;
             align-items: center;
             justify-content: center;
+            width: 52px;
+            height: 144px;
         }
         .volume-slider-wrap.show { display: flex; }
         .volume-slider-wrap input[type="range"] {
-            writing-mode: vertical-lr;
-            direction: rtl;
-            width: 36px;
-            height: 120px;
+            width: 120px;
+            height: 36px;
             cursor: pointer;
+            transform: rotate(-90deg);
+            transform-origin: center;
         }
     </style>
 </head>
