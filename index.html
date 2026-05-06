@@ -105,7 +105,7 @@
         }
 
         // 验证target路径，防止目录遍历攻击
-        function validateTargetPath(target) {
+        function validateTargetPath(target, language) {
             if (!target) {
                 return { valid: false, error: 'target参数不能为空' };
             }
@@ -115,15 +115,16 @@
             if (cleanPath.includes('..')) {
                 return { valid: false, error: '非法路径' };
             }
-            // 确保路径在Bilibili或YouTube目录下
-            if (!cleanPath.startsWith('Bilibili/') && !cleanPath.startsWith('YouTube/')) {
-                return { valid: false, error: 'target必须位于Bilibili或YouTube目录下' };
-            }
             // 确保以.html结尾
             if (!cleanPath.endsWith('.html')) {
                 cleanPath += '.html';
             }
-            return { valid: true, path: cleanPath };
+            // 根据语言判断目录：中文使用zh，其他使用en
+            const langKey = language ? language.toLowerCase() : 'en';
+            const isChineseLang = langKey.startsWith('zh');
+            const dir = isChineseLang ? 'zh' : 'en';
+
+            return { valid: true, path: `${dir}/${cleanPath}` };
         }
 
         // 跳转到目标页面
@@ -171,7 +172,7 @@
                 return;
             }
 
-            const validation = validateTargetPath(target);
+            const validation = validateTargetPath(target, language);
             if (!validation.valid) {
                 showError(validation.error);
                 return;
